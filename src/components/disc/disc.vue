@@ -1,7 +1,7 @@
 <template>
 	<transition name="slide">
-		<!-- <music-list :title="title" :bg-image="bgImage" :songs="songs"></music-list> -->
-		<div>11111</div>
+		<music-list :title="title" :bg-image="bgImage" :songs="songs"></music-list>
+<!-- 		<div style="position:fixed;top:0;left:0;right:0;bottom:0;z-index:99;background-color:#fff;">11111</div> -->
 	</transition>	
 </template>
 
@@ -24,7 +24,6 @@
 		},
 		computed : {
 			title (){
-
 				return this.disc.dissname
 			},
 			bgImage (){
@@ -35,7 +34,9 @@
 			])			
 		},
 		created(){
-			this._getSongList()			
+
+			this._getSongList()	
+
 		},
 		methods : {
 			_getSongList (){
@@ -47,7 +48,6 @@
 				}
 				getSongList(this.disc.dissid).then((res)=>{
 					if (res.code === ERR_OK) {
-						console.log(JSON.stringify(res.cdlist[0].songlist));
 						this.songs = this._normalizeSongs(res.cdlist[0].songlist)  //拿到歌曲列表
 					}					
 				})

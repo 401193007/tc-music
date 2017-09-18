@@ -21,10 +21,10 @@
 		        class="list" 
 		        ref="list">
 			<div class="song-list-wrapper">
-<!-- 				<song-list :songs="songs" 
+				<song-list :songs="songs" 
 						:rank="rank" 
 						@select="selectItem">
-				</song-list> -->
+				</song-list>
 			</div>
 			<div v-show="!songs.length" class="loading-container">
 				<loading></loading>
@@ -34,8 +34,83 @@
 </template>
 
 <script>
+	import Scroll from "base/scroll/scroll"
+	import Loading from "base/loading/loading"
+
+	import SongList from 'base/song-list/song-list'
+
+	import {prefixStyle} from 'common/js/dom'
+
+	import {mapActions} from 'vuex'
+
+	const RESERVED_HEIGHT = 40
+	const transform = prefixStyle('transform')
+	const backdrop = prefixStyle('backdrop-filter')	
+
 	export default {
-		
+		props: {
+			bgImage: {
+				type: String,
+				default: ''
+			},
+			songs: {
+				type: Array,
+				default: []
+			},
+			title: {
+				type: String,
+				default: ''
+			},
+			rank: {
+				type: Boolean,
+				default: false
+			}
+		},		
+		components : {
+			Scroll,
+			Loading,
+			SongList
+		},
+		data() {
+			return {
+				scrollY: 0
+			}
+		},		
+		//初始化数据
+		created() {
+			this.probeType = 3
+			this.listenScroll = true
+		},	
+		mounted(){
+			this.imageHeight = this.$refs.bgImage.clientHeight
+			this.minTransalteY = -this.imageHeight + RESERVED_HEIGHT
+			this.$refs.list.$el.style.top = `${this.imageHeight}px`			
+		},	
+		computed: {
+			//初始化图片样式
+			bgStyle() {
+				return `background-image:url(${this.bgImage})`
+			}
+		},		
+		methods : {
+			//返回上一页
+			back(){
+				this.$router.back();
+			},
+			scroll(pos) {
+				this.scrollY = pos.y
+			},	
+			handlePlaylist(playlist) {
+				const bottom = playlist.length > 0 ? '60px' : ''
+				this.$refs.list.$el.style.bottom = bottom
+				this.$refs.list.refresh()
+			},		
+			//异步事件
+			...mapActions([
+				'selectPlay',
+				'randomPlay'
+			])						
+		}
 	}
 </script>
 
@@ -114,17 +189,17 @@
 				position: relative
 				height: 100%
 				background: $color-background
-			.list
-				position: fixed
-				top: 0
-				bottom: 0
+		.list
+			position: fixed
+			top: 0
+			bottom: 0
+			width: 100%
+			background: $color-background
+			.song-list-wrapper
+				padding: 20px 30px
+			.loading-container
+				position: absolute
 				width: 100%
-				background: $color-background
-				.song-list-wrapper
-					padding: 20px 30px
-				.loading-container
-					position: absolute
-					width: 100%
-					top: 50%
-					transform: translateY(-50%)																				
+				top: 50%
+				transform: translateY(-50%)																				
 </style>
