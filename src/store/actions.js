@@ -7,8 +7,7 @@ import {shuffle} from 'common/js/util'     //全局随机播放
  * @param vuex对象
  * @param 使用该函数时的对象
  */
-
-
+ 
 //返回满足回调函数中指定的测试条件的第一个数组元素的索引值。
 function findIndex(list, song) {
 	return list.findIndex((item) => {
@@ -17,7 +16,7 @@ function findIndex(list, song) {
 }
 
 export const selectPlay = function ({commit, state}, {list, index}) {
-
+	console.log("我进来提交了！！！");
 	commit(types.SET_SEQUENCE_LIST, list)  //同步更新数据到state
 
 	//如果播放模式为随机播放
@@ -32,4 +31,19 @@ export const selectPlay = function ({commit, state}, {list, index}) {
 	commit(types.SET_CURRENT_INDEX, index)   //当前播放索引
 	commit(types.SET_FULL_SCREEN, true)      //播放条是否满屏
 	commit(types.SET_PLAYING_STATE, true)    //播放状态
+}
+
+
+/**
+ * 随机播放
+ * playMode.random 随机播放模式
+ */
+export const randomPlay = function ({commit}, {list}) {
+	commit(types.SET_PLAY_MODE, playMode.random)
+	commit(types.SET_SEQUENCE_LIST, list)
+	let randomList = shuffle(list)
+	commit(types.SET_PLAYLIST, randomList)
+	commit(types.SET_CURRENT_INDEX, 0)
+	commit(types.SET_FULL_SCREEN, true)
+	commit(types.SET_PLAYING_STATE, true)
 }

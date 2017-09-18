@@ -82,9 +82,10 @@
 			this.listenScroll = true
 		},	
 		mounted(){
-			this.imageHeight = this.$refs.bgImage.clientHeight
-			this.minTransalteY = -this.imageHeight + RESERVED_HEIGHT
-			this.$refs.list.$el.style.top = `${this.imageHeight}px`			
+			// console.log(this.$refs.bgImage);  //获取dom
+			this.imageHeight = this.$refs.bgImage.clientHeight   //获取图片的高度
+			this.minTransalteY = -this.imageHeight + RESERVED_HEIGHT    //最小可滚动高度
+			this.$refs.list.$el.style.top = `${this.imageHeight}px`		//控制滚动区的上偏移值	
 		},	
 		computed: {
 			//初始化图片样式
@@ -98,19 +99,67 @@
 				this.$router.back();
 			},
 			scroll(pos) {
-				this.scrollY = pos.y
+				//滚动的高度
+				this.scrollY = pos.y  
 			},	
 			handlePlaylist(playlist) {
 				const bottom = playlist.length > 0 ? '60px' : ''
 				this.$refs.list.$el.style.bottom = bottom
 				this.$refs.list.refresh()
-			},		
+			},	
+			selectItem(item,index){
+				this.selectPlay({
+					list : this.songs,
+					index
+				})
+			},	
+			random(){
+				this.randomPlay({
+					list: this.songs
+				})				
+			},
 			//异步事件
 			...mapActions([
 				'selectPlay',
 				'randomPlay'
 			])						
-		}
+		},
+		watch: {
+			scrollY(newVal) {
+				//Math对象
+				let translateY = Math.max(this.minTransalteY, newVal)  //比较值最小滚动高度和滚动值
+				let scale = 1
+				let zIndex = 0
+				let blur = 0
+				//Math.abs() 返回绝对值
+				const percent = Math.abs(newVal / this.imageHeight)
+				// console.log("新值；" + newVal)
+				// console.log("占图片高度百分比："  + percent)
+
+				//大于0是向下滑，小于0是向上滑
+				if (newVal > 0) {
+				  scale = 1 + percent
+				  zIndex = 10
+				} else {
+				  blur = Math.min(20, percent * 20)
+				}
+
+				this.$refs.layer.style[transform] = `translate3d(0,${translateY}px,0)`
+				this.$refs.filter.style[backdrop] = `blur(${blur}px)`
+				if (newVal < this.minTransalteY) {
+				  zIndex = 10
+				  this.$refs.bgImage.style.paddingTop = 0
+				  this.$refs.bgImage.style.height = `${RESERVED_HEIGHT}px`
+				  this.$refs.playBtn.style.display = 'none'
+				} else {
+				  this.$refs.bgImage.style.paddingTop = '70%'
+				  this.$refs.bgImage.style.height = 0
+				  this.$refs.playBtn.style.display = ''
+				}
+				this.$refs.bgImage.style[transform] = `scale(${scale})`   //注意回弹效果
+				this.$refs.bgImage.style.zIndex = zIndex
+			}
+		},			
 	}
 </script>
 

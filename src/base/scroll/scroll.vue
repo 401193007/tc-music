@@ -52,7 +52,8 @@
 
 				this.scroll = new BScroll(this.$refs.wrapper, {
 					probeType: this.probeType,
-					click: this.click
+					click: this.click,
+					bounceTime : 700
 				})
 				
 				if (this.listenScroll) {

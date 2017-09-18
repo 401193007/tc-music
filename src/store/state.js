@@ -5,6 +5,7 @@ const state = {
 	disc : {},
 	sequenceList : [],  //专辑列表
 	mode: playMode.sequence,   //播放序号
+	fullScreen: false,
 }
 
 export default state
