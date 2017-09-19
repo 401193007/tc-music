@@ -16,7 +16,6 @@ function findIndex(list, song) {
 }
 
 export const selectPlay = function ({commit, state}, {list, index}) {
-	console.log("我进来提交了！！！");
 	commit(types.SET_SEQUENCE_LIST, list)  //同步更新数据到state
 
 	//如果播放模式为随机播放
@@ -27,6 +26,8 @@ export const selectPlay = function ({commit, state}, {list, index}) {
 	} else {
 		commit(types.SET_PLAYLIST, list)
 	}
+
+	console.log("提交之后：" + state.playlist);
 
 	commit(types.SET_CURRENT_INDEX, index)   //当前播放索引
 	commit(types.SET_FULL_SCREEN, true)      //播放条是否满屏
