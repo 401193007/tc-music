@@ -6,13 +6,62 @@
 				<img width="100%" height="100%" :src="currentSong.image">
 			</div>			
 
+            <div class="top">
+                <div class="back">
+                    <i class="icon-back"></i>
+                </div>
+                <h1 class="title" v-html="currentSong.name"></h1>
+                <h2 class="subtitle" v-html="currentSong.singer"></h2>
+            </div>
+
+            <div class="middle">
+                <div class="middle-l" ref="middleL">
+                    <div class="cd-wrapper" ref="cdWrapper">
+                        <div class="cd" :class="cdCls">
+                            <img :src="currentSong.image" alt="" class="image">
+                        </div>
+                    </div>     
+                    <div class="playing-lyric-wrapper">
+                        <div class="playing-lyric">{{playingLyric}}</div>
+                    </div>   
+                </div>
+
+                <scroll class="middle-r" ref="lyricList" :data="currentLyric && currentLyric.lines">
+                    <div class="lyric-wrapper">
+                        <div v-if="currentLyric">
+                            <p ref="lyricLine"
+                               class="text"
+                               :class="{'current': currentLineNum ===index}"
+                               v-for="(line,index) in currentLyric.lines">{{line.txt}}</p>
+                        </div>
+                    </div>
+                </scroll>
+            </div>
+
+            <div class="bottom">
+                <div class="dot-wrapper">
+                    <span class="dot" :class="{'active':currentShow==='cd'}"></span>
+                    <span class="dot" :class="{'active':currentShow==='lyric'}"></span>
+                </div>
+                
+                <!-- 播放进度条 -->
+                <div class="progress-wrapper">
+                    <span class="time time-l">{{format(currentTime)}}</span>
+                    <div class="progress-bar-wrapper">
+                        <progress-bar :percent="percent" @percentChange="onProgressBarChange"></progress-bar>
+                    </div> 
+                    <span class="time time-r">{{format(currentSong.duration)}}</span>            
+                </div>
+                <!-- 播放进度条完 -->
+
+            </div>
 		</div>
 
 
 
 		<!-- 底部播放 -->
-		<div class="mini-player">
-			<div class="icon">
+		<div class="mini-player" v-show="!fullScreen">
+			<div class="icon" >
 				<img :src="currentSong.image" alt="" width="40" height="40">
 			</div>
 			<div class="text">
@@ -29,12 +78,18 @@
 		<!-- 底部播放完-->
 
 		<!-- <playlist ref="playlist"></playlist> -->
-		<audio ref="audio" :src="currentSong.url"></audio>
+		<audio ref="audio" 
+               :src="currentSong.url"
+               @play="ready">           
+        </audio>
 
 	</div>
 </template>
 
 <script>
+
+    import ProgressBar from 'base/progress-bar/progress-bar'
+
 	// import Playlist from 'components/playlist/playlist'
 	import Scroll from 'base/scroll/scroll'   //滚动插件
 
@@ -46,30 +101,96 @@
 	const transform = prefixStyle('transform')
 	const transitionDuration = prefixStyle('transitionDuration')  //动画时间
 
-	console.log(JSON.stringify(playerMixin));
-
 	export default {
 		mixins: [playerMixin],   
 		components : {
 			// Playlist,
-			Scroll
+			Scroll,
+            ProgressBar
 		},
 		data (){
 			return {
-
+                songReady : true,  //歌曲是否准备完毕
+                currentTime: 0,    //当前播放状态
+                currentShow: 'cd',   //当前显示             
+                currentLyric: null,
+                playingLyric: ''
 			}
 		},
 		mounted (){
-			console.log("当前歌曲1：" + this.$store.getters.playlist.length);
-			console.log("当前歌曲2：" + this.playlist.length);
+
 		},
 		computed : {
+            //歌曲图片动画状态
+            cdCls() {
+                return this.playing ? 'play' : 'play pause'
+            },
+            //进度条百分比
+            percent() {
+                return this.currentTime / this.currentSong.duration
+            },            
 			...mapGetters([
 				'currentIndex',
 				'fullScreen',
 				'playing'
 			])			
-		}
+		},
+        watch : {
+            currentSong(newSong, oldSong) {
+                console.log("我什么时候变化了！！！" + newSong);
+                if (!newSong.id) {
+                    return
+                }
+                if (newSong.id === oldSong.id) {
+                    return
+                }
+                if (this.currentLyric) {
+                    this.currentLyric.stop()
+                    this.currentTime = 0
+                    this.playingLyric = ''
+                    this.currentLineNum = 0
+                }
+
+                clearTimeout(this.timer) 
+                this.timer = setTimeout(() => {
+                    this.$refs.audio.play()
+                    // this.getLyric()
+                }, 1000)
+            },
+
+            playing(newPlaying) {
+                const audio = this.$refs.audio   //拿到audio的dom
+                this.$nextTick(() => {
+                    console.log("音乐开始播放了：" + newPlaying)
+                    newPlaying ? audio.play() : audio.pause()
+                })
+            }
+        },
+        methods : {
+            _pad(num, n = 2) {
+                let len = num.toString().length
+                while (len < n) {
+                    num = '0' + num
+                    len++
+                }
+                return num
+            },
+            // 格式化时间
+            format(interval) {
+                interval = interval | 0
+                const minute = interval / 60 | 0
+                const second = this._pad(interval % 60)
+                return `${minute}:${second}`
+            },    
+            //进度条变化事件
+            onProgressBarChange(){
+
+            },
+            ready() {
+                this.songReady = true
+                // this.savePlayHistory(this.currentSong)
+            },                    
+        }
 	}
 
 </script>

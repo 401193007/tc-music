@@ -2,6 +2,28 @@ import * as types from './mutation-types'  //同步提交mutation api
 import {playMode} from 'common/js/config'   //播放模式配置文件
 import {shuffle} from 'common/js/util'     //全局随机播放
 
+
+
+function test(arr){
+	if(typeof arr !== 'array') return;
+
+	var result = [];
+	for(var i=0;i<arr.length;i++){
+		if( (i+1) % 9 === 0 && (i+1)>=9){
+
+			var newArr = [],j=i;
+			while(j>=0){
+				newArr.push(arr[j]);
+				j--
+			}
+
+			result.push(newArr);
+		}	
+	}
+}
+
+
+
 /**
  * 选择播放
  * @param vuex对象
@@ -26,8 +48,6 @@ export const selectPlay = function ({commit, state}, {list, index}) {
 	} else {
 		commit(types.SET_PLAYLIST, list)
 	}
-
-	console.log("提交之后：" + state.playlist);
 
 	commit(types.SET_CURRENT_INDEX, index)   //当前播放索引
 	commit(types.SET_FULL_SCREEN, true)      //播放条是否满屏
