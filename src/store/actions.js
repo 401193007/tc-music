@@ -2,28 +2,6 @@ import * as types from './mutation-types'  //同步提交mutation api
 import {playMode} from 'common/js/config'   //播放模式配置文件
 import {shuffle} from 'common/js/util'     //全局随机播放
 
-
-
-function test(arr){
-	if(typeof arr !== 'array') return;
-
-	var result = [];
-	for(var i=0;i<arr.length;i++){
-		if( (i+1) % 9 === 0 && (i+1)>=9){
-
-			var newArr = [],j=i;
-			while(j>=0){
-				newArr.push(arr[j]);
-				j--
-			}
-
-			result.push(newArr);
-		}	
-	}
-}
-
-
-
 /**
  * 选择播放
  * @param vuex对象

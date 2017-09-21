@@ -45,7 +45,7 @@ export const playerMixin = {
 	    ]),
 	},
     mounted(){
-    	console.log("我是用了扩展我进来了！！！！");
+    	
     },
 	methods : {
 		//改变播放模式

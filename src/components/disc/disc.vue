@@ -1,7 +1,6 @@
 <template>
 	<transition name="slide">
 		<music-list :title="title" :bg-image="bgImage" :songs="songs"></music-list>
-<!-- 		<div style="position:fixed;top:0;left:0;right:0;bottom:0;z-index:99;background-color:#fff;">11111</div> -->
 	</transition>	
 </template>
 
