@@ -15,25 +15,27 @@ export default class Song {
 		this.url = url		
 	}
 
-	//原型上的方法
-	getLyric(){
+	getLyric() {
 		if (this.lyric) {
 			return Promise.resolve(this.lyric)
-		}	
+		}
 
-		return Promise((resolve,reject) => {
+		return new Promise((resolve, reject) => {
 
-			getLyric(this.mid).then((res)=>{
+			//注意这里  getLyric(this.mid) 是一个promise对象
+			getLyric(this.mid).then((res) => {
 				if (res.retcode === ERR_OK) {
 					this.lyric = Base64.decode(res.lyric)
 					resolve(this.lyric)
-				}else{
+				} else {
 					reject('no lyric')
 				}
 			})
-			
-		})	
+
+
+		})
 	}
+
 }
 
 

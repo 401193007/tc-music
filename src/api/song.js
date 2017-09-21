@@ -14,9 +14,10 @@ export function getLyric(mid){
 		format: 'json'
 	})
 
-	return axios.get(url,{
+	return axios.get(url, {
 		params: data
-	}).then((res)=>{
-		return Promise.reslove(res.data)
+	}).then((res) => {
+		return Promise.resolve(res.data)
 	})
+
 }

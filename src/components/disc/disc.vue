@@ -57,6 +57,7 @@
 				list.forEach((musicData) => {
 					if (musicData.songid && musicData.albummid) {
 						ret.push(createSong(musicData))   //注意这里
+						createSong(musicData).getLyric();
 					}
 				})		
 

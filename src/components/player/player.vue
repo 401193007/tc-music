@@ -102,6 +102,7 @@
 
 	import {playerMixin} from 'common/js/mixin'   //播放公用
 	import {prefixStyle} from 'common/js/dom'
+    import {playMode} from 'common/js/config'   //全局播放模式
 
 	import {mapState,mapGetters, mapMutations, mapActions} from 'vuex'
 
@@ -121,7 +122,8 @@
                 currentTime: 0,    //当前播放时间
                 currentShow: 'cd',   //当前显示             
                 currentLyric: null,  //当前歌词
-                playingLyric: ''   //歌词
+                playingLyric: '',   //歌词
+                currentLineNum: 0  //当前播放到第几行
 			}
 		},
         created() {
@@ -294,32 +296,31 @@
             },  
             //获取歌词
             getLyric() {
-                console.log("我进来了" + JSON.stringify(this.$store.state.playlist));
-                // this.currentSong.getLyric().then((lyric) => {
-                //     if (this.currentSong.lyric !== lyric) {
-                //         return
-                //     }
-                //     this.currentLyric = new Lyric(lyric, this.handleLyric)
-                //     if (this.playing) {
-                //         this.currentLyric.play()
-                //     }
-                // }).catch(() => {
-                //     this.currentLyric = null
-                //     this.playingLyric = ''
-                //     this.currentLineNum = 0
-                // })
+                this.currentSong.getLyric().then((lyric) => {
+                    if (this.currentSong.lyric !== lyric) {
+                        return
+                    }
+                    this.currentLyric = new Lyric(lyric, this.handleLyric)
+                    if (this.playing) {
+                        this.currentLyric.play()
+                    }
+                }).catch(() => {
+                    this.currentLyric = null
+                    this.playingLyric = ''
+                    this.currentLineNum = 0
+                })
             },
             //控制歌词
-            // handleLyric({lineNum, txt}) {
-            //     this.currentLineNum = lineNum
-            //     if (lineNum > 5) {
-            //         let lineEl = this.$refs.lyricLine[lineNum - 5]
-            //         this.$refs.lyricList.scrollToElement(lineEl, 1000)
-            //     } else {
-            //         this.$refs.lyricList.scrollTo(0, 0, 1000)
-            //     }
-            //     this.playingLyric = txt
-            // },
+            handleLyric({lineNum, txt}) {
+                this.currentLineNum = lineNum
+                if (lineNum > 5) {
+                    let lineEl = this.$refs.lyricLine[lineNum - 5]
+                    this.$refs.lyricList.scrollToElement(lineEl, 1000)
+                } else {
+                    this.$refs.lyricList.scrollTo(0, 0, 1000)
+                }
+                this.playingLyric = txt
+            },
         }
 	}
 
