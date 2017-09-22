@@ -7,7 +7,7 @@
 			</div>			
 
             <div class="top">
-                <div class="back">
+                <div class="back" @click="back">
                     <i class="icon-back"></i>
                 </div>
                 <h1 class="title" v-html="currentSong.name"></h1>
@@ -58,30 +58,50 @@
                 </div>
                 <!-- 播放进度条完 -->
 
+                <!-- 底部按钮 -->
+                <div class="operators">
+                    <div class="icon i-left" @click="changeMode">
+                        <i :class="iconMode"></i>    
+                    </div>
+                    <div class="icon i-left" :class="disableCls"> 
+                        <i @click="prev" class="icon-prev"></i>
+                    </div>
+                    <div class="icon i-center" :class="disableCls">
+                        <i @click="togglePlaying" :class="playIcon"></i>
+                    </div>
+                    <div class="icon i-right" :class="disableCls">
+                        <i @click="next" class="icon-next"></i>
+                    </div>
+                    <div class="icon i-right">
+                        <!-- <i @click="toggleFavorite(currentSong)" class="icon" :class="getFavoriteIcon(currentSong)"></i> -->
+                    </div>                    
+                </div>
+                <!-- 底部按钮完 -->
+
             </div>
 		</div>
 
-
-
 		<!-- 底部播放 -->
-		<div class="mini-player" v-show="!fullScreen">
+		<div class="mini-player" v-show="!fullScreen"  @click="open">
 			<div class="icon" >
-				<img :src="currentSong.image" alt="" width="40" height="40">
+				<img :src="currentSong.image" alt="" width="40" height="40" :class="cdCls">
 			</div>
 			<div class="text">
-				<h2 class="name"></h2>
-				<p class="desc"></p>
+				<h2 class="name" v-html="currentSong.name"></h2>
+				<p class="desc" v-html="currentSong.singer"></p>
 			</div>
 			<div class="control">
-
+                <progress-circle :radius="radius" :percent="percent">
+                    <i @click.stop="togglePlaying" class="icon-mini" :class="miniIcon"></i>
+                </progress-circle>
 			</div>
-			<div class="control">
+			<div class="control" @click.stop="showPlaylist">
 				<i class="icon-playlist"></i>
 			</div>
 		</div>
 		<!-- 底部播放完-->
 
-		<!-- <playlist ref="playlist"></playlist> -->
+		<playlist ref="playlist"></playlist>
 		<audio ref="audio" 
                :src="currentSong.url"
                @play="ready"
@@ -96,6 +116,8 @@
 <script>
     import Lyric from 'lyric-parser'
     import ProgressBar from 'base/progress-bar/progress-bar'
+    import ProgressCircle from 'base/progress-circle/progress-circle'
+    import Playlist from 'components/playlist/playlist'
 
 	// import Playlist from 'components/playlist/playlist'
 	import Scroll from 'base/scroll/scroll'   //滚动插件
@@ -112,13 +134,15 @@
 	export default {
 		mixins: [playerMixin],   
 		components : {
-			// Playlist,
+			Playlist,
 			Scroll,
-            ProgressBar
+            ProgressBar,
+            ProgressCircle
 		},
 		data (){
 			return {
-                songReady : true,  //歌曲是否准备完毕
+                radius: 32,
+                songReady : false,  //歌曲是否准备完毕
                 currentTime: 0,    //当前播放时间
                 currentShow: 'cd',   //当前显示             
                 currentLyric: null,  //当前歌词
@@ -145,7 +169,17 @@
 				'currentIndex',
 				'fullScreen',
 				'playing'
-			])			
+			]),
+            disableCls() {
+                return this.songReady ? '' : 'disable'
+            },    
+            playIcon() {
+                return this.playing ? 'icon-pause' : 'icon-play'
+            },
+            miniIcon() {
+                return this.playing ? 'icon-pause-mini' : 'icon-play-mini'
+            },
+
 		},
         watch : {
             currentSong(newSong, oldSong) {
@@ -191,7 +225,10 @@
                 const minute = interval / 60 | 0
                 const second = this._pad(interval % 60)
                 return `${minute}:${second}`
-            },    
+            },   
+            back(){
+                this.setFullScreen(false)
+            }, 
             ready() {
                 this.songReady = true
                 // this.savePlayHistory(this.currentSong)
@@ -225,7 +262,39 @@
                 }
                 this.songReady = false
             },
-
+            prev(){
+                if (!this.songReady) {
+                    return
+                }
+                if (this.playlist.length === 1) {
+                    this.loop()
+                    return
+                } else {
+                    let index = this.currentIndex - 1
+                    if (index === -1) {
+                        index = this.playlist.length - 1
+                    }
+                    this.setCurrentIndex(index)
+                    if (!this.playing) {
+                        this.togglePlaying()
+                    }
+                }
+                this.songReady = false                
+            },
+            //全屏
+            open(){
+                this.setFullScreen(true)  
+            },
+            //改变播放状态
+            togglePlaying(){
+                if (!this.songReady) {
+                    return
+                }
+                this.setPlayingState(!this.playing)
+                if (this.currentLyric) {
+                    this.currentLyric.togglePlay()
+                }
+            },            
             //更新播放时间
             updateTime(e) {
                 this.currentTime = e.target.currentTime
@@ -304,7 +373,8 @@
                     if (this.playing) {
                         this.currentLyric.play()
                     }
-                }).catch(() => {
+                }).catch((text) => {
+                    console.log(text);
                     this.currentLyric = null
                     this.playingLyric = ''
                     this.currentLineNum = 0
@@ -321,9 +391,15 @@
                 }
                 this.playingLyric = txt
             },
+            //显示播放列表
+            showPlaylist(){
+                this.$refs.playlist.show()
+            },
+            ...mapMutations({
+                setFullScreen: 'SET_FULL_SCREEN'
+            })
         }
 	}
-
 </script>
 
 <style scoped lang="stylus" rel="stylesheet/stylus">
