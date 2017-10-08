@@ -39,7 +39,6 @@
 		},
 		methods : {
 			_getSongList (){
-
 				//检查是否存在
 				if (!this.disc.dissid){
 					this.$router.push('/recommend')

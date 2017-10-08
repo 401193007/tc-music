@@ -13,19 +13,28 @@
 			<scroll ref="listContent" class="list-content" 
 					:data="sequenceList" 
 					:refreshDelay="refreshDelay">
-				<li :key="item.id" ref="listItem" class="item" 
-					v-for="(item,index) in sequenceList"
-                	@click="selectItem(item,index)">
-                	<i class="current" :class="getCurrentIcon(item)"></i>
-                	<span class="text">{{item.name}}</span>
-					<span  class="like">
-						<i ></i>
-					</span>
-					<span @click.stop="deleteOne(item)" class="delete">
-						<i class="icon-delete"></i>
-					</span>
-                </li>	
+                <transition-group name="list" tag="ul">
+                    <li :key="item.id" ref="listItem" class="item" v-for="(item,index) in sequenceList"
+                    @click="selectItem(item,index)">
+                        <i class="current" :class="getCurrentIcon(item)"></i>
+                        <span class="text">{{item.name}}</span>
+                        <span @click.stop="toggleFavorite(item)" class="like">
+                            <i :class="getFavoriteIcon(item)"></i>
+                        </span>
+                        <span @click.stop="deleteOne(item)" class="delete">
+                            <i class="icon-delete"></i>
+                        </span>
+                    </li>
+                </transition-group>  
 			</scroll>
+
+            <div class="list-operate">
+                <div class="add">
+                    <i class="icon-add"></i>
+                    <span class="text">添加歌曲到队列</span>
+                </div>
+            </div>
+
 			<div @click="hide" class="list-close">
 				<span>关闭</span>
 			</div>
@@ -60,6 +69,9 @@
 			Scroll,
 			Confirm
 		},
+        mounted(){
+            
+        },
 		methods : {
 			show(){
 				this.showFlag = true

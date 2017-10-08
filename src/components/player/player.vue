@@ -73,7 +73,7 @@
                         <i @click="next" class="icon-next"></i>
                     </div>
                     <div class="icon i-right">
-                        <!-- <i @click="toggleFavorite(currentSong)" class="icon" :class="getFavoriteIcon(currentSong)"></i> -->
+                        <i @click="toggleFavorite(currentSong)" class="icon" :class="getFavoriteIcon(currentSong)"></i>
                     </div>                    
                 </div>
                 <!-- 底部按钮完 -->
@@ -393,6 +393,8 @@
             },
             //显示播放列表
             showPlaylist(){
+                //注意this.$refs的用法
+                //当this.$refs获取的是业务组件的时候，可以使用组件内的方法
                 this.$refs.playlist.show()
             },
             ...mapMutations({

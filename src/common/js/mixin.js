@@ -10,7 +10,6 @@ export const playlistMixin = {
 		])
 	},
 	mounted(){
-
 		this.handlePlaylist(this.playlist);
 	},
 	activated(){
@@ -68,13 +67,66 @@ export const playerMixin = {
 			setPlayingState: 'SET_PLAYING_STATE'
 		}),
 		...mapActions([
-			// 'saveFavoriteList',
+			'saveFavoriteList',
 			'deleteFavoriteList'
-		])
-
-			
+		]),
+		getFavoriteIcon(song) {
+			if (this.isFavorite(song)) {
+				return 'icon-favorite'
+			}
+			return 'icon-not-favorite'
+		},
+		isFavorite(song) {
+			const index = this.favoriteList.findIndex((item) => {
+				return item.id === song.id
+			})
+			return index > -1
+		},
+		toggleFavorite(song) {
+			if (this.isFavorite(song)) {
+				this.deleteFavoriteList(song)
+			} else {
+				this.saveFavoriteList(song)
+			}
+		},					
 	}    	
 };
+
+
+export const searchMixin = {
+	data() {
+		return {
+			query: '',
+			refreshDelay: 120
+		}
+	},
+	computed: {
+		...mapGetters([
+			'searchHistory'
+		])
+	},
+	methods: {
+		//改变当前查询值
+		onQueryChange(query) {
+			this.query = query
+		},
+		//失去焦点
+		blurInput() {
+			this.$refs.searchBox.blur()
+		},
+		addQuery(query) {
+			console.log("21321:" + query);
+			this.$refs.searchBox.setQuery(query)
+		},
+		saveSearch() {
+			this.saveSearchHistory(this.query)
+		},
+		...mapActions([
+			'saveSearchHistory',
+			'deleteSearchHistory'
+		])
+	}
+}
 
 
 

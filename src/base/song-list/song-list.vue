@@ -26,6 +26,8 @@
         default: false
       }
     },
+    mounted(){
+    },
     methods: {
       selectItem(item, index) {
         this.$emit('select', item, index)

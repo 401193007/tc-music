@@ -11,3 +11,11 @@ export const SET_FULL_SCREEN = 'SET_FULL_SCREEN'  //是否满屏
 export const SET_PLAYING_STATE = 'SET_PLAYING_STATE'  //播放状态
 
 export const SET_PLAY_MODE = 'SET_PLAY_MODE'  //播放模式
+
+export const SET_SINGER = 'SET_SINGER'  //歌手
+
+export const SET_TOP_LIST = 'SET_TOP_LIST'  //排行榜
+
+export const SET_SEARCH_HISTORY = 'SET_SEARCH_HISTORY'
+
+export const SET_FAVORITE_LIST = 'SET_FAVORITE_LIST'

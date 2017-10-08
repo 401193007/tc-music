@@ -18,7 +18,7 @@
 				@scroll="scroll"
 		        :listen-scroll="listenScroll" 
 		        :probe-type="probeType" 
-		        class="list" 
+		        class="list"  
 		        ref="list">
 			<div class="song-list-wrapper">
 				<song-list :songs="songs" 
@@ -133,8 +133,6 @@
 				let blur = 0
 				//Math.abs() 返回绝对值
 				const percent = Math.abs(newVal / this.imageHeight)
-				// console.log("新值；" + newVal)
-				// console.log("占图片高度百分比："  + percent)
 
 				//大于0是向下滑，小于0是向上滑
 				if (newVal > 0) {

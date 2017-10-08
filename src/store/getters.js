@@ -19,3 +19,11 @@ export const playing = state => state.playing
 export const fullScreen = state => state.fullScreen
 
 export const currentIndex = state => state.currentIndex
+
+export const singer = state => state.singer
+
+export const topList = state => state.topList
+
+export const searchHistory = state => state.searchHistory
+
+export const playHistory = state => state.playHistory

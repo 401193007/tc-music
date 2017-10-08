@@ -56,6 +56,8 @@
 					bounceTime : 700
 				})
 				
+				console.log(this.scroll);
+
 				if (this.listenScroll) {
 					let me = this
 					this.scroll.on('scroll', (pos) => {
@@ -89,8 +91,10 @@
 			scrollTo() {
 				this.scroll && this.scroll.scrollTo.apply(this.scroll, arguments)
 			},
-			scrollToElement() {
+			scrollToElement(element,time) {
+				//改变执行上下文
 				this.scroll && this.scroll.scrollToElement.apply(this.scroll, arguments)
+				// this.scroll && this.scroll.scrollToElement(element,time)
 			}
 		},
 		watch: {
